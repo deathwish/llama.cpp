@@ -425,6 +425,12 @@ static void test(void) {
     assert(true == common_params_parse(argv.size(), list_str_to_char(argv).data(), params, LLAMA_EXAMPLE_COMMON));
     assert(params.load_mode == LLAMA_LOAD_MODE_DIRECT_IO);
 
+    setenv("LLAMA_ARG_SPEC_DRAFT_DEVICE", "none", true);
+    argv = {"binary_name"};
+    assert(true == common_params_parse(argv.size(), list_str_to_char(argv).data(), params, LLAMA_EXAMPLE_SERVER));
+    assert(!params.speculative.draft.devices.empty());
+    assert(params.speculative.draft.devices[0] == nullptr);
+
     printf("test-arg-parser: test negated environment variables\n\n");
 
     setenv("LLAMA_ARG_LOAD_MODE", "none", true);
