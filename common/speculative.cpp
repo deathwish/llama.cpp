@@ -3046,6 +3046,7 @@ common_params common_base_params_to_speculative(const common_params & params) {
                 [](ggml_backend_dev_t d) { return d != nullptr; });
         if (n_devs == 1) {
             result.split_mode = LLAMA_SPLIT_MODE_LAYER;
+            std::fill(std::begin(result.tensor_split), std::end(result.tensor_split), 0.0f);
         }
 
         if (params_spec.cpuparams.n_threads > 0) {

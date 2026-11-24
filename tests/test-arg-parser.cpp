@@ -109,7 +109,20 @@ static void test(void) {
             const auto draft = common_base_params_to_speculative(base);
             assert(draft.n_ubatch == 8);
         }
+
+        // a draft model pinned to a single device zeroes tensor_split and forces split_mode to layer
+        base.speculative.draft.mparams.path = "dummy_draft.gguf";
+        base.speculative.draft.devices = { reinterpret_cast<ggml_backend_dev_t>(0x1), nullptr };
+        base.tensor_split[0] = 1.0f;
+        base.tensor_split[1] = 1.0f;
+        {
+            const auto draft = common_base_params_to_speculative(base);
+            assert(draft.split_mode == LLAMA_SPLIT_MODE_LAYER);
+            assert(draft.tensor_split[0] == 0.0f);
+            assert(draft.tensor_split[1] == 0.0f);
+        }
     }
+
 
     printf("test-arg-parser: make sure there is no duplicated arguments in any examples\n\n");
     for (int ex = 0; ex < LLAMA_EXAMPLE_COUNT; ex++) {
